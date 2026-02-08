@@ -1,0 +1,15 @@
+{
+    "projectSettings": {
+        "outputDirectory": "frontend/dist",
+        "framework": "vite"
+    },
+    "routes": [
+        {
+            "handle": "filesystem"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/index.html"
+        }
+    ]
+}
