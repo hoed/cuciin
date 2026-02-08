@@ -231,16 +231,32 @@ cd frontend
 npm test
 ```
 
-### Build for Production
-```bash
-# Backend
-cd backend
-npm run build
+### Deployment Guide
 
-# Frontend
-cd frontend
-npm run build
-```
+#### 1. Backend Deployment (Railway/Render/Fly.io)
+Recommended for hosting the Node.js + Socket.io server.
+
+1. **Connect Repository**
+2. **Root Directory**: `backend`
+3. **Build Command**: `npm install && npx prisma generate && npm run build`
+4. **Start Command**: `npm start`
+5. **Environment Variables**:
+   - `DATABASE_URL`: Connection string from Neon/Postgres
+   - `JWT_SECRET`: Random secret string
+   - `GEMINI_API_KEY`: Google AI Studio Key
+   - `PORT`: `PORT` provided by Railway (or 8080)
+
+#### 2. Frontend Deployment (Vercel)
+Recommended for hosting the React SPA.
+
+1. **Connect Repository**: Import the `frontend` folder.
+2. **Framework Preset**: Select `Vite`.
+3. **Environment Variables**:
+   - `VITE_API_URL`: The URL of your deployed Backend (e.g., `https://cuciin-backend.railway.app`)
+4. **Deploy**: Vercel will automatically detect `vercel.json` configuration for SPA routing.
+
+#### Database (Neon)
+- Use the **Connection Pooling** URL for serverless/cloud environments to manage connections efficiently.
 
 ## 📝 License
 
