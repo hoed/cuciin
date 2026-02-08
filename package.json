@@ -1,6 +1,10 @@
 {
     "name": "cuciin-platform",
     "version": "1.0.0",
+    "workspaces": [
+        "backend",
+        "frontend"
+    ],
     "description": "Smart Laundry Marketplace with AI",
     "scripts": {
         "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
