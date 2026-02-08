@@ -1,15 +1,8 @@
 {
-    "projectSettings": {
-        "outputDirectory": "frontend/dist",
-        "framework": "vite"
-    },
-    "routes": [
+    "rewrites": [
         {
-            "handle": "filesystem"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "/index.html"
+            "source": "/(.*)",
+            "destination": "/index.html"
         }
     ]
 }
