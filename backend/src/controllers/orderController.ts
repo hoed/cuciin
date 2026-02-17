@@ -1,11 +1,15 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import prisma from "../prisma";
 import { estimateOrder } from "../services/aiService";
 import { findOptimalPartner } from "../services/matchingService";
 import { io } from "../index";
+import { AuthRequest } from "../middlewares/authMiddleware";
 
-export const createOrder = async (req: Request, res: Response) => {
-    const { customerId, items, isExpress, pickupAddr, deliveryAddr, lat, lng } = req.body;
+export const createOrder = async (req: AuthRequest, res: Response) => {
+    const { items, isExpress, pickupAddr, deliveryAddr, lat, lng } = req.body;
+    const customerId = req.user?.userId;
+
+    if (!customerId) return res.status(401).json({ error: "Unauthorized" });
 
     try {
         // 1. AI Estimation
@@ -69,9 +73,11 @@ export const createOrder = async (req: Request, res: Response) => {
     }
 };
 
-export const getMyOrders = async (req: Request, res: Response) => {
-    const { userId } = req.params;
-    const { role } = req.query;
+export const getMyOrders = async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.userId;
+    const role = req.user?.role;
+
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
     try {
         let orders;
@@ -116,16 +122,40 @@ export const getMyOrders = async (req: Request, res: Response) => {
     }
 };
 
-export const updateOrderStatus = async (req: Request, res: Response) => {
+export const updateOrderStatus = async (req: AuthRequest, res: Response) => {
     const { orderId } = req.params;
     const { status, courierId } = req.body;
+    const requesterId = req.user?.userId;
+    const requesterRole = req.user?.role;
 
     try {
+        // Fetch current order to check permissions
+        const currentOrder = await prisma.order.findUnique({
+            where: { orderNumber: orderId }
+        });
+
+        if (!currentOrder) {
+            return res.status(404).json({ error: "Order not found" });
+        }
+
+        // Security Check: prevent couriers from changing courierId field to someone else
+        // or changing it if they are already assigned, unless they are admin.
+        if (requesterRole === 'COURIER') {
+            if (courierId && courierId !== requesterId) {
+                return res.status(403).json({ error: "You can only assign yourself as a courier." });
+            }
+
+            // If the order already has a courier and it's not the requester, prevent update
+            if (currentOrder.courierId && currentOrder.courierId !== requesterId) {
+                return res.status(403).json({ error: "This order is already assigned to another courier." });
+            }
+        }
+
         const order = await prisma.order.update({
             where: { orderNumber: orderId },
             data: {
                 status,
-                ...(courierId && { courierId }) // Assign courier if provided
+                ...(courierId && { courierId }) // Assign courier if provided (and passed checks above)
             },
             include: { customer: true, partner: true }
         });
