@@ -3,7 +3,7 @@ import { X, Sparkles, MapPin, Loader2, Info, ChevronRight, Calculator } from 'lu
 import api from '../api';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const OrderModal = ({ isOpen, onClose, user }) => {
+const OrderModal = ({ isOpen, onClose, customerId, customerLat, customerLng, refreshOrders }) => {
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [aiAnalyzing, setAiAnalyzing] = useState(false);
@@ -11,10 +11,10 @@ const OrderModal = ({ isOpen, onClose, user }) => {
     const [orderData, setOrderData] = useState({
         items: [{ name: '', qty: 1 }],
         isExpress: false,
-        pickupAddr: user.address || '',
-        deliveryAddr: user.address || '',
-        lat: user.lat || -7.2575,
-        lng: user.lng || 112.7521
+        pickupAddr: '',
+        deliveryAddr: '',
+        lat: customerLat || -7.2575,
+        lng: customerLng || 112.7521
     });
 
     const [estimation, setEstimation] = useState(null);
@@ -76,7 +76,7 @@ const OrderModal = ({ isOpen, onClose, user }) => {
         setLoading(true);
         try {
             const res = await api.post('/api/orders/create', {
-                customerId: user.id,
+                customerId: customerId,
                 items: orderData.items,
                 isExpress: orderData.isExpress,
                 pickupAddr: orderData.pickupAddr,
@@ -114,8 +114,7 @@ const OrderModal = ({ isOpen, onClose, user }) => {
                     {step === 1 ? (
                         <div className="space-y-6">
                             <div>
-                                <label className="text-sm font-medium text-slate-400 mb-4 block">Daftar Cucian</label>
-                                {items.map((item, idx) => (
+                                {orderData.items.map((item, idx) => (
                                     <div key={idx} className="flex gap-2 mb-3">
                                         <input
                                             type="text"
@@ -132,7 +131,7 @@ const OrderModal = ({ isOpen, onClose, user }) => {
                                         />
                                         <select
                                             className="bg-white/5 border border-white/10 rounded-lg p-3 text-sm text-slate-400"
-                                            value={item.type}
+                                            value={item.type || 'pcs'}
                                             onChange={(e) => handleItemChange(idx, 'type', e.target.value)}
                                         >
                                             <option value="kg">kg</option>
@@ -155,13 +154,13 @@ const OrderModal = ({ isOpen, onClose, user }) => {
                                 <input
                                     type="checkbox"
                                     className="w-10 h-5"
-                                    checked={isExpress}
-                                    onChange={(e) => setIsExpress(e.target.checked)}
+                                    checked={orderData.isExpress}
+                                    onChange={(e) => setOrderData(prev => ({ ...prev, isExpress: e.target.checked }))}
                                 />
                             </div>
 
                             <button
-                                onClick={getEstimation}
+                                onClick={handleAnalyze}
                                 disabled={loading}
                                 className="w-full btn btn-primary py-4 mt-4"
                             >
@@ -181,11 +180,11 @@ const OrderModal = ({ isOpen, onClose, user }) => {
                             <div className="grid grid-cols-2 gap-4 mt-6">
                                 <div className="glass-card p-4">
                                     <div className="text-xs text-slate-500 uppercase font-bold">Total Harga</div>
-                                    <div className="text-lg font-bold text-[#D2F235]">Rp {aiEstimation?.order?.totalPrice.toLocaleString()}</div>
+                                    <div className="text-lg font-bold text-[#D2F235]">Rp {estimation?.price.toLocaleString()}</div>
                                 </div>
                                 <div className="glass-card p-4">
                                     <div className="text-xs text-slate-500 uppercase font-bold">Estimasi Selesai</div>
-                                    <div className="text-lg font-bold">{(aiEstimation?.order?.estimatedTime / 60).toFixed(1)} Jam</div>
+                                    <div className="text-lg font-bold">{estimation?.time} Jam</div>
                                 </div>
                             </div>
 
@@ -195,7 +194,7 @@ const OrderModal = ({ isOpen, onClose, user }) => {
                                 </div>
                                 <div>
                                     <div className="text-[10px] text-slate-500 font-bold uppercase">Mitra Terpilih</div>
-                                    <div className="font-bold">{aiEstimation?.order?.partner?.name}</div>
+                                    <div className="font-bold">Mitra Terdekat Cuciin</div>
                                 </div>
                             </div>
 

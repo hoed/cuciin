@@ -100,7 +100,7 @@ const JobRow = ({ id, name, service, status, time, alert = false }) => (
     <div className={`glass-card p-4 flex justify-between items-center ${alert ? 'border-l-2 border-rose-500' : ''}`}>
         <div className="flex gap-4 items-center">
             <div className="h-10 w-10 bg-white/5 rounded-lg flex items-center justify-center font-bold text-[#D2F235]">
-                {id.includes('-') ? id.split('-')[1] : '000'}
+                {id && id.includes('-') ? id.split('-')[1] : '000'}
             </div>
             <div>
                 <div className="font-bold text-sm">{name}</div>
