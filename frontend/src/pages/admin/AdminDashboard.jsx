@@ -159,7 +159,7 @@ const AdminDashboard = () => {
                                                 {order.customer?.name}
                                             </td>
                                             <td className="px-4 py-3">{order.partner?.name || "-"}</td>
-                                            <td className="px-4 py-3 font-bold text-[#D2F235]">Rp {order.totalPrice.toLocaleString()}</td>
+                                            <td className="px-4 py-3 font-bold text-[#D2F235]">Rp {(order.totalPrice || 0).toLocaleString()}</td>
                                             <td className="px-4 py-3">
                                                 <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${order.status === 'COMPLETED' ? 'bg-green-500/10 text-green-500' :
                                                     order.status === 'PENDING' ? 'bg-yellow-500/10 text-yellow-500' :

@@ -73,7 +73,7 @@ const CustomerDashboard = () => {
                                         id={order.orderNumber}
                                         partner={order.partner?.name || "Mencari Mitra..."}
                                         status={order.status}
-                                        price={`Rp ${order.totalPrice.toLocaleString()}`}
+                                        price={`Rp ${(order.totalPrice || 0).toLocaleString()}`}
                                         date={new Date(order.createdAt).toLocaleDateString('id-ID')}
                                     />
                                 ))

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Sparkles, MapPin, Loader2, Info, ChevronRight, Calculator } from 'lucide-react';
+import { X, Sparkles, MapPin, Loader2, Info, ChevronRight, Calculator, Clock, ShoppingBag } from 'lucide-react';
 import api from '../api';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -174,13 +174,13 @@ const OrderModal = ({ isOpen, onClose, customerId, customerLat, customerLng, ref
                             </div>
                             <h4 className="text-2xl font-bold">Hasil Analisis AI</h4>
                             <p className="text-slate-400 text-sm">
-                                "{aiEstimation?.ai_explanation}"
+                                "{estimation?.explanation}"
                             </p>
 
                             <div className="grid grid-cols-2 gap-4 mt-6">
                                 <div className="glass-card p-4">
                                     <div className="text-xs text-slate-500 uppercase font-bold">Total Harga</div>
-                                    <div className="text-lg font-bold text-[#D2F235]">Rp {estimation?.price.toLocaleString()}</div>
+                                    <div className="text-lg font-bold text-[#D2F235]">Rp {(estimation?.price || 0).toLocaleString()}</div>
                                 </div>
                                 <div className="glass-card p-4">
                                     <div className="text-xs text-slate-500 uppercase font-bold">Estimasi Selesai</div>
