@@ -6,14 +6,23 @@ import api from '../../api';
 const PartnerDashboard = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    let user = {};
+    try {
+        const stored = localStorage.getItem('user');
+        if (stored && stored !== 'undefined') {
+            user = JSON.parse(stored);
+        }
+    } catch (e) {
+        console.error("Error parsing user data");
+    }
 
     const fetchOrders = async () => {
         try {
             const res = await api.get(`/api/orders/user/${user.id}?role=PARTNER`);
-            setOrders(res.data);
+            setOrders(Array.isArray(res.data) ? res.data : []);
         } catch (err) {
             console.error("Fetch partner orders error:", err);
+            setOrders([]);
         } finally {
             setLoading(false);
         }

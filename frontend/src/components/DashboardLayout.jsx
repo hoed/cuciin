@@ -17,7 +17,15 @@ import { getSocketUrl } from '../api';
 const DashboardLayout = ({ children, role = "Pemanntau", userName = "Pengguna" }) => {
     const [notifications, setNotifications] = useState([]);
     const [showNotif, setShowNotif] = useState(false);
-    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    let currentUser = {};
+    try {
+        const stored = localStorage.getItem('user');
+        if (stored && stored !== 'undefined') {
+            currentUser = JSON.parse(stored);
+        }
+    } catch (e) {
+        console.error("Error parsing user data");
+    }
 
     useEffect(() => {
         const socket = io(getSocketUrl());
@@ -117,9 +125,9 @@ const DashboardLayout = ({ children, role = "Pemanntau", userName = "Pengguna" }
 
                         <div className="h-12 glass-card flex items-center gap-3 px-4 rounded-xl">
                             <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-xs font-bold shadow-lg shadow-indigo-500/20">
-                                {userName.charAt(0)}
+                                {userName ? String(userName).charAt(0).toUpperCase() : '?'}
                             </div>
-                            <span className="font-medium text-sm">{userName}</span>
+                            <span className="font-medium text-sm">{userName || "Pengguna"}</span>
                         </div>
                     </div>
                 </header>

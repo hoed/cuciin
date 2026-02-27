@@ -21,18 +21,28 @@ L.Marker.prototype.options.icon = DefaultIcon;
 const CourierDashboard = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    let user = {};
+    try {
+        const stored = localStorage.getItem('user');
+        if (stored && stored !== 'undefined') {
+            user = JSON.parse(stored);
+        }
+    } catch (e) {
+        console.error("Error parsing user data");
+    }
     const [currentOrder, setCurrentOrder] = useState(null);
 
     const fetchOrders = async () => {
         try {
             const res = await api.get(`/api/orders/user/${user.id}?role=COURIER`);
-            setOrders(res.data);
+            const ordersData = Array.isArray(res.data) ? res.data : [];
+            setOrders(ordersData);
             // Auto-select first active order
-            const active = res.data.find(o => ['PICKUP_ASSIGNED', 'DELIVERING'].includes(o.status));
+            const active = ordersData.find(o => ['PICKUP_ASSIGNED', 'DELIVERING'].includes(o.status));
             if (active) setCurrentOrder(active);
         } catch (err) {
             console.error("Fetch courier orders error:", err);
+            setOrders([]);
         } finally {
             setLoading(false);
         }

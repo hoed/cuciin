@@ -23,14 +23,23 @@ import Typewriter from 'typewriter-effect';
 const AdminDashboard = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    let user = {};
+    try {
+        const stored = localStorage.getItem('user');
+        if (stored && stored !== 'undefined') {
+            user = JSON.parse(stored);
+        }
+    } catch (e) {
+        console.error("Error parsing user data");
+    }
 
     const fetchOrders = async () => {
         try {
             const res = await api.get(`/api/orders/user/${user.id}?role=ADMIN`);
-            setOrders(res.data);
+            setOrders(Array.isArray(res.data) ? res.data : []);
         } catch (err) {
             console.error("Fetch admin orders error:", err);
+            setOrders([]);
         } finally {
             setLoading(false);
         }

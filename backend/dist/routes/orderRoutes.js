@@ -2,7 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const orderController_1 = require("../controllers/orderController");
+const authMiddleware_1 = require("../middlewares/authMiddleware");
 const router = (0, express_1.Router)();
+router.use(authMiddleware_1.authenticate);
 router.post("/create", orderController_1.createOrder);
 router.get("/user/:userId", orderController_1.getMyOrders);
+router.put("/:orderId/status", orderController_1.updateOrderStatus);
 exports.default = router;

@@ -8,14 +8,23 @@ const CustomerDashboard = () => {
     const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
-    const user = JSON.parse(localStorage.getItem('user') || '{"id":"demo-id", "name":"Budi Santoso"}');
+    let user = { id: "demo-id", name: "Budi Santoso" };
+    try {
+        const stored = localStorage.getItem('user');
+        if (stored && stored !== 'undefined') {
+            user = JSON.parse(stored);
+        }
+    } catch (e) {
+        console.error("Error parsing user data");
+    }
 
     const fetchOrders = async () => {
         try {
             const res = await api.get(`/api/orders/user/${user.id}?role=CUSTOMER`);
-            setOrders(res.data);
+            setOrders(Array.isArray(res.data) ? res.data : []);
         } catch (err) {
             console.error("Fetch orders error:", err);
+            setOrders([]);
         } finally {
             setLoading(false);
         }
