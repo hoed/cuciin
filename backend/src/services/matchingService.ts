@@ -16,8 +16,8 @@ export const findOptimalPartner = async (customerLat: number, customerLng: numbe
 
     if (partners.length === 0) return null;
 
-    // Calculate scores (Heuristic AI approach)
-    const scoredPartners = partners.map(p => {
+    // Calculate match score based on common tags
+    const scoredPartners = partners.map((p: any) => {
         const distance = Math.sqrt(
             Math.pow(p.lat - customerLat, 2) + Math.pow(p.lng - customerLng, 2)
         );
@@ -30,7 +30,7 @@ export const findOptimalPartner = async (customerLat: number, customerLng: numbe
     });
 
     // Sort by score descending
-    scoredPartners.sort((a, b) => b.score - a.score);
+    scoredPartners.sort((a: any, b: any) => b.score - a.score);
 
     return scoredPartners[0];
 };
